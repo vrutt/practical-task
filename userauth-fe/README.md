@@ -1,0 +1,47 @@
+# Authentication Frontend
+
+## Prerequisites
+
+- Git, Node.js 20.9+ and npm
+- The FastAPI backend running locally
+
+## Setup
+
+```bash
+git clone <repository-url> user-auth
+cd user-auth/userauth-fe
+npm install
+```
+
+Copy `.env.example` to `.env.local` and set `BACKEND_URL` to the backend URL, for example `http://127.0.0.1:8000`. Then run:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000`. Configure that origin in the backend's `CORS_ALLOWED_ORIGINS`.
+
+## Structure
+
+- `app/` — Next.js App Router pages and layouts.
+- `components/` — reusable UI and protected layout.
+- `assets/css/` — global styles and page or component stylesheets.
+- `services/api/apiCalls/auth/` — auth API operations; add other features under `apiCalls/`.
+- `services/api/client.ts` and `endpoints.ts` — shared HTTP handling, refresh and endpoint paths.
+- `types/auth.ts` — auth payload, user, component and store interfaces; `types/index.ts` — shared response interfaces.
+- `store/` — Zustand client state.
+- `utils/constants.ts` — frontend validation rules and messages.
+
+API calls use the same-origin `/api` proxy. The backend sets HTTP-only cookies; the store contains only the current user's profile. The backend enforces access and roles.
+
+## Adding a feature
+
+1. Add its request, response and component interfaces in `types/`; extend the shared response interfaces where appropriate.
+2. Add endpoint paths to `services/api/endpoints.ts` and API methods under `services/api/apiCalls/<feature>/` using the shared client.
+3. Add components under `components/`, validation constants under `utils/`, and shared client state under `store/` only if needed.
+4. Add a route or layout under `app/`; use the protected layout and backend authorization for private data.
+5. Run `npm run lint`, `npm run format:check`, and `npm run build`. To fix formatting, run `npm run lint:fix` followed by `npm run format`.
+
+## Rendering
+
+Login and registration have statically generated shells. Protected pages render a static shell and fetch session-specific data on the client without caching; the guard does not replace backend authorization. ISR is unnecessary because the app has no periodically refreshed public data. If future pages need personalized server-rendered content, use request-time rendering and do not share cached user data.

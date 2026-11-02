@@ -1,0 +1,16 @@
+.profile {
+  margin-top: 25px;
+}
+.profile dt {
+  color: var(--color-muted);
+  font-size: var(--font-size-caption);
+  margin-top: 18px;
+}
+.profile dt:first-child {
+  margin-top: 0;
+}
+.profile dd {
+  margin: 6px 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}

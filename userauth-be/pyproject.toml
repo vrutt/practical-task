@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 120
+exclude = ["userauth-venv", "frontend"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.isort]
+profile = "black"
+line_length = 120

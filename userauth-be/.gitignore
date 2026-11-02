@@ -1,0 +1,14 @@
+# Environment variables
+.env
+
+# Virtual environment
+userauth-venv/
+
+# Cache files
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+
+# Runtime logs
+logs/
+*.log
