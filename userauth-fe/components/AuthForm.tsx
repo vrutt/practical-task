@@ -1,16 +1,29 @@
 "use client";
-import "@/assets/css/auth-form.css";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { SubmitEvent } from "react";
-import { useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
-import { authService } from "@/services/api/apiCalls/auth";
-import { errorMessage } from "@/services/api/client";
-import { useAuth } from "@/store/auth";
 import type { IAuthFormProps } from "@/types/auth";
+
+import { errorMessage } from "@/services/api/client";
+import { authService } from "@/services/api/apiCalls/auth";
+
+import { useAuth } from "@/store/auth";
 import { passwordPattern, passwordRequirements } from "@/utils/constants";
+
+import "@/assets/css/auth-form.css";
+
+function RegisteredNotice() {
+  const registered = useSearchParams().get("registered") === "1";
+  if (!registered) return null;
+  return (
+    <p role="status" className="auth-success">
+      Account created. Sign in to continue.
+    </p>
+  );
+}
 
 export default function AuthForm({ registration = false }: IAuthFormProps) {
   const [name, setName] = useState("");
@@ -18,14 +31,27 @@ export default function AuthForm({ registration = false }: IAuthFormProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const mounted = useRef(true);
   const setUser = useAuth((s) => s.setUser);
   const router = useRouter();
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setBusy(true);
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
     try {
-      if (registration && !name.trim()) {
+      if (!trimmedEmail) {
+        setError("Please enter your email.");
+        return;
+      }
+      if (registration && !trimmedName) {
         setError("Please enter your name.");
         return;
       }
@@ -34,16 +60,19 @@ export default function AuthForm({ registration = false }: IAuthFormProps) {
         return;
       }
       if (registration) {
-        await authService.register({ name: name.trim(), email, password });
-        router.replace("/login?registered=1");
+        await authService.register({ name: trimmedName, email: trimmedEmail, password });
+        if (mounted.current) router.replace("/login?registered=1");
       } else {
-        setUser(await authService.login({ email, password }));
-        router.replace("/dashboard");
+        const user = await authService.login({ email: trimmedEmail, password });
+        if (!mounted.current) return;
+        setUser(user);
+        router.replace(user.role === "Admin" ? "/users" : "/dashboard");
       }
     } catch (error) {
-      setError(errorMessage(error, "Unable to reach the server. Please try again."));
+      if (mounted.current)
+        setError(errorMessage(error, "Unable to reach the server. Please try again."));
     } finally {
-      setBusy(false);
+      if (mounted.current) setBusy(false);
     }
   }
   return (
@@ -54,6 +83,11 @@ export default function AuthForm({ registration = false }: IAuthFormProps) {
         <p className="muted">
           {registration ? "Enter your details to get started." : "Sign in to access your account."}
         </p>
+        {!registration && (
+          <Suspense fallback={null}>
+            <RegisteredNotice />
+          </Suspense>
+        )}
         <form className="auth-form" onSubmit={submit}>
           {registration && (
             <label>
@@ -96,7 +130,7 @@ export default function AuthForm({ registration = false }: IAuthFormProps) {
               {error}
             </p>
           )}
-          <button disabled={busy}>
+          <button type="submit" disabled={busy}>
             {busy ? "Please wait…" : registration ? "Create account" : "Sign in"}
           </button>
         </form>
