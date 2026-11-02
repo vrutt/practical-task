@@ -1,7 +1,9 @@
 "use client";
-import "@/assets/css/profile.css";
 
 import { useAuth } from "@/store/auth";
+
+import "@/assets/css/profile.css";
+
 export default function Profile() {
   const user = useAuth((s) => s.user);
   return (
@@ -14,6 +16,8 @@ export default function Profile() {
           <dd>{user?.name}</dd>
           <dt>Email</dt>
           <dd>{user?.email}</dd>
+          <dt>Role</dt>
+          <dd>{user?.role}</dd>
           <dt>Member since</dt>
           <dd>
             {user &&

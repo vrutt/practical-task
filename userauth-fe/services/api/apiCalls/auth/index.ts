@@ -1,6 +1,8 @@
+import type { ILoginPayload, IRegisterPayload, IUser } from "@/types/auth";
+
 import { apiRequest } from "@/services/api/client";
 import { API_ENDPOINTS } from "@/services/api/endpoints";
-import type { ILoginPayload, IRegisterPayload, IUser } from "@/types/auth";
+
 
 const jsonHeaders = { "Content-Type": "application/json" };
 

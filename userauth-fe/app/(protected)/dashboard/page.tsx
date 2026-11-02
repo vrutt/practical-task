@@ -1,9 +1,11 @@
 "use client";
-import "@/assets/css/dashboard.css";
 
 import Link from "next/link";
 
 import { useAuth } from "@/store/auth";
+
+import "@/assets/css/dashboard.css";
+
 export default function Dashboard() {
   const user = useAuth((s) => s.user);
   return (

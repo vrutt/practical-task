@@ -21,3 +21,9 @@
 .auth-form small {
   color: var(--color-muted);
 }
+.auth-success {
+  color: #1b6b3a;
+  background: #eef8f1;
+  padding: 10px;
+  border-radius: 6px;
+}

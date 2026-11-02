@@ -1,12 +1,15 @@
 "use client";
-import "@/assets/css/users.css";
 
 import { useEffect, useState } from "react";
 
-import { authService } from "@/services/api/apiCalls/auth";
-import { errorMessage } from "@/services/api/client";
-import { useAuth } from "@/store/auth";
 import type { IUser } from "@/types/auth";
+
+import { errorMessage } from "@/services/api/client";
+import { authService } from "@/services/api/apiCalls/auth";
+
+import { useAuth } from "@/store/auth";
+
+import "@/assets/css/users.css";
 
 export default function UsersPage() {
   const user = useAuth((s) => s.user);

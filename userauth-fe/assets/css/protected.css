@@ -26,6 +26,10 @@
   margin: 70px auto;
   padding: 0 24px;
 }
+.session-gate {
+  display: grid;
+  gap: 16px;
+}
 @media (max-width: 480px) {
   .protected-header {
     align-items: flex-start;
