@@ -56,6 +56,7 @@ class ApiMessages:
     AUTH_REQUIRED_MESSAGE = "Authentication required"
     INVALID_SESSION_MESSAGE = "Invalid or expired session"
     INVALID_CREDENTIALS_MESSAGE = "Invalid email or password"
+    LOGIN_RATE_LIMIT_MESSAGE = "Too many login attempts. Please try again later."
     FORBIDDEN_MESSAGE = "Insufficient permissions"
     DUPLICATE_MESSAGE = "A record with this value already exists"
     VALIDATION_MESSAGE = "Please check the submitted information"
@@ -66,3 +67,11 @@ class ApiMessages:
     LOGOUT_SUCCESS_MESSAGE = "Signed out"
     PROFILE_SUCCESS_MESSAGE = "Profile retrieved"
     USERS_SUCCESS_MESSAGE = "Users retrieved"
+
+
+class AuthenticationPolicy:
+    """Rate limits and retention periods for authentication records."""
+
+    LOGIN_RATE_LIMIT = "5/hour"
+    AUTH_RECORD_RETENTION_DAYS = 7
+    CLEANUP_INTERVAL_SECONDS = 86400

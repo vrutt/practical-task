@@ -17,7 +17,8 @@ from app.modules.user.schemas import (
 from app.modules.user.service import UserService
 from app.security.cookies import CookieManager
 from app.security.dependencies import RequireRoles, current_user
-from app.utils.constant import ApiMessages, ApiPaths, AuthValues
+from app.security.rate_limit import limiter
+from app.utils.constant import ApiMessages, ApiPaths, AuthenticationPolicy, AuthValues
 
 router = APIRouter()
 Db = Annotated[AsyncSession, Depends(get_async_db, scope="function")]
@@ -36,7 +37,8 @@ async def register(data: Registration, db: Db):
 
 
 @router.post(ApiPaths.LOGIN_PATH, response_model=UserSuccessResponse, dependencies=[Depends(origin_guard)])
-async def login(data: Login, response: Response, db: Db):
+@limiter.limit(AuthenticationPolicy.LOGIN_RATE_LIMIT)
+async def login(request: Request, data: Login, response: Response, db: Db):
     """Sign in and set authentication cookies."""
     user, tokens = await UserService(db).login(str(data.email), data.password)
     CookieManager.set_tokens(response, tokens)

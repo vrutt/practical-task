@@ -8,13 +8,13 @@
 ## Setup (Windows PowerShell)
 
 ```powershell
-git clone <repository-url> user-auth
+git clone https://github.com/vrutt/practical-task user-auth
 cd user-auth
 py -m venv userauth-venv
 .\userauth-venv\Scripts\Activate.ps1
+cd userauth-be
 pip install -r requirements.txt
 psql -U postgres -c "CREATE DATABASE userauth;"
-cd userauth-be
 Copy-Item .env.example .env
 ```
 

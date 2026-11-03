@@ -10,11 +10,11 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # Application mode and debug behavior.
-    DEBUG: bool = False
+    DEBUG: bool
     ENVIRONMENT: str
 
     # PostgreSQL connection and pool settings (timeouts are in seconds).
-    ASYNC_DATABASE_URL: str = "postgresql+asyncpg://postgres:10652@127.0.0.1:5432/test-db"
+    ASYNC_DATABASE_URL: str
     DATABASE_POOL_SIZE: int
     DATABASE_MAX_OVERFLOW: int
     DATABASE_POOL_TIMEOUT: int

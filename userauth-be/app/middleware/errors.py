@@ -1,13 +1,16 @@
 """Centralized error responses for the API."""
 
 import logging
+import math
 import sqlite3
+import time
 
 from asyncpg.exceptions import UniqueViolationError
 from fastapi import FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException
 
@@ -35,6 +38,18 @@ def error_response(status_code: int, message: str, errors=None, headers=None):
 
 def register_exception_handlers(app: FastAPI):
     """Register consistent handlers for expected and unexpected errors."""
+
+    @app.exception_handler(RateLimitExceeded)
+    async def handle_rate_limit(request: Request, exc: RateLimitExceeded):
+        """Return the common error format and the time until the window resets."""
+        limit, keys = request.state.view_rate_limit
+        reset_at, _ = request.app.state.limiter.limiter.get_window_stats(limit, *keys)
+        retry_after = str(max(1, math.ceil(reset_at - time.time())))
+        return error_response(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            ApiMessages.LOGIN_RATE_LIMIT_MESSAGE,
+            headers={"Retry-After": retry_after},
+        )
 
     @app.exception_handler(IntegrityError)
     async def handle_integrity_error(request: Request, exc: IntegrityError):

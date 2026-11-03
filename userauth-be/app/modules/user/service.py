@@ -36,11 +36,13 @@ class UserService:
         return user, await self.issue_tokens(user)
 
     async def issue_tokens(self, user: User) -> tuple[str, str]:
-        """Issue access and refresh tokens and persist the refresh-token hash."""
-        access = self.jwt.create(user.id, AuthValues.ACCESS_TOKEN)
+        """Issue both tokens bound to a revocable refresh-token record."""
         refresh = self.jwt.create(user.id, AuthValues.REFRESH_TOKEN)
         expires = datetime.now(timezone.utc).replace(tzinfo=None) + settings.refresh_lifetime
-        await self.tokens.add(RefreshToken(user_id=user.id, token_hash=self.jwt.digest(refresh), expires_at=expires))
+        record = await self.tokens.add(
+            RefreshToken(user_id=user.id, token_hash=self.jwt.digest(refresh), expires_at=expires)
+        )
+        access = self.jwt.create(user.id, AuthValues.ACCESS_TOKEN, session_id=record.id)
         return access, refresh
 
     async def rotate(self, token: str | None) -> tuple[str, str]:
