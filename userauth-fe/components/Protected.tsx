@@ -6,12 +6,12 @@ import { useEffect, useRef, useState } from "react";
 
 import type { IProtectedProps, IUser } from "@/types/auth";
 
-import { ApiError } from "@/services/api/client";
 import { authService } from "@/services/api/apiCalls/auth";
-
+import { ApiError } from "@/services/api/client";
 import { useAuth } from "@/store/auth";
 
 import "@/assets/css/protected.css";
+
 
 const ADMIN_ROUTE = "/users";
 
@@ -42,8 +42,8 @@ export default function Protected({ children }: IProtectedProps) {
         setReady(true);
       } catch (error) {
         if (!active) return;
+        setUser(null);
         if (error instanceof ApiError && error.status === 401) {
-          setUser(null);
           router.replace("/login");
           return;
         }
@@ -69,9 +69,10 @@ export default function Protected({ children }: IProtectedProps) {
       setUser(null);
       router.replace("/login");
     } catch {
+      setError("Could not confirm whether you signed out. Check your connection and try again.");
+    } finally {
       logoutLock.current = false;
       setSigningOut(false);
-      setError("Could not sign out. Please try again.");
     }
   }
   function retry() {
@@ -79,7 +80,7 @@ export default function Protected({ children }: IProtectedProps) {
     setReady(false);
     setAttempt((value) => value + 1);
   }
-  if (!ready)
+  if (!ready || !user)
     return (
       <main className="center">
         <section className="card session-gate">
@@ -93,7 +94,7 @@ export default function Protected({ children }: IProtectedProps) {
               </button>
             </>
           ) : (
-            <p role="status">Loading your account…</p>
+            <p role="status">{ready ? "Redirecting to sign in…" : "Loading your account…"}</p>
           )}
         </section>
       </main>

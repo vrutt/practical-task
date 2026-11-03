@@ -21,6 +21,8 @@ async def test_registration_duplicate_and_validation(client):
     assert USER["password"] not in invalid.text
     assert response.json()["success"] is True
     assert "data" in response.json()
+    created_at = response.json()["data"]["created_at"]
+    assert datetime.fromisoformat(created_at.replace("Z", "+00:00")).utcoffset() == timedelta(0)
 
 
 async def test_login_and_protected_profile(client):
@@ -262,4 +264,3 @@ async def test_existing_users_can_login_with_old_password(client):
         await session.commit()
     response = await client.post("/auth/login", json={"email": "existing@example.com", "password": old_password})
     assert response.status_code == 200
-

@@ -20,10 +20,7 @@ export default function Profile() {
           <dd>{user?.role}</dd>
           <dt>Member since</dt>
           <dd>
-            {user &&
-              new Date(
-                user.created_at.endsWith("Z") ? user.created_at : `${user.created_at}Z`,
-              ).toLocaleDateString(undefined, { dateStyle: "long" })}
+            {user && new Date(user.created_at).toLocaleDateString(undefined, { dateStyle: "long" })}
           </dd>
         </dl>
       </section>

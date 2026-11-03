@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from uuid import UUID
 
@@ -63,6 +63,14 @@ class UserResponse(BaseModel):
     email: EmailStr
     role: RoleType
     created_at: datetime
+
+    @field_validator("created_at")
+    @classmethod
+    def normalize_created_at(cls, value: datetime) -> datetime:
+        """Expose stored UTC timestamps with an explicit timezone."""
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc)
 
 
 class UserSuccessResponse(SuccessResponse[UserResponse]):

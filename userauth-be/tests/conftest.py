@@ -29,6 +29,7 @@ USER = {"name": "Ada", "email": "ada@example.com", "password": "Correct-Horse1!"
 
 @pytest_asyncio.fixture
 async def client():
+    app.state.limiter.reset()
     engine = create_async_engine("sqlite+aiosqlite:///:memory:", poolclass=StaticPool)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -48,4 +49,5 @@ async def client():
         c.test_sessions = sessions
         yield c
     app.dependency_overrides.clear()
+    app.state.limiter.reset()
     await engine.dispose()

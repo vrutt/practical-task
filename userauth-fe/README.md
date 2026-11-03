@@ -8,7 +8,7 @@
 ## Setup
 
 ```bash
-git clone <repository-url> user-auth
+git clone https://github.com/vrutt/practical-task user-auth
 cd user-auth/userauth-fe
 npm install
 ```
@@ -33,6 +33,10 @@ Open `http://localhost:3000`. Configure that origin in the backend's `CORS_ALLOW
 - `utils/constants.ts` — frontend validation rules and messages.
 
 API calls use the same-origin `/api` proxy. The backend sets HTTP-only cookies; the store contains only the current user's profile. The backend enforces access and roles.
+
+The protected layout owns session initialization: it shows a loading state, requests the current user, and redirects on a confirmed unauthorized response. It clears the stored user if initialization fails, and network failures show a retry option. The stored user is the last successfully verified identity, not proof that a session remains valid; protected APIs enforce access independently. If a logout response is uncertain, the app does not refresh or claim that logout succeeded. It asks the user to retry, keeping the last verified identity until logout succeeds or session initialization fails.
+
+Refresh requests are coordinated within one browser tab. Separate tabs can race when rotating the same refresh token; a tab may need to sign in again. Profile timestamps are returned by the API with an explicit UTC offset.
 
 ## Adding a feature
 

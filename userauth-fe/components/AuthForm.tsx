@@ -1,18 +1,18 @@
 "use client";
 
+
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { SubmitEvent } from "react";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 
 import type { IAuthFormProps } from "@/types/auth";
 
-import { errorMessage } from "@/services/api/client";
 import { authService } from "@/services/api/apiCalls/auth";
+import { errorMessage } from "@/services/api/client";
 
 import { useAuth } from "@/store/auth";
 import { passwordPattern, passwordRequirements } from "@/utils/constants";
-
 import "@/assets/css/auth-form.css";
 
 function RegisteredNotice() {
@@ -31,17 +31,13 @@ export default function AuthForm({ registration = false }: IAuthFormProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const mounted = useRef(true);
+  const submitting = useRef(false);
   const setUser = useAuth((s) => s.setUser);
   const router = useRouter();
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitting.current) return;
+    submitting.current = true;
     setError("");
     setBusy(true);
     const trimmedName = name.trim();
@@ -61,18 +57,17 @@ export default function AuthForm({ registration = false }: IAuthFormProps) {
       }
       if (registration) {
         await authService.register({ name: trimmedName, email: trimmedEmail, password });
-        if (mounted.current) router.replace("/login?registered=1");
+        router.replace("/login?registered=1");
       } else {
         const user = await authService.login({ email: trimmedEmail, password });
-        if (!mounted.current) return;
         setUser(user);
         router.replace(user.role === "Admin" ? "/users" : "/dashboard");
       }
     } catch (error) {
-      if (mounted.current)
-        setError(errorMessage(error, "Unable to reach the server. Please try again."));
+      setError(errorMessage(error, "Unable to reach the server. Please try again."));
     } finally {
-      if (mounted.current) setBusy(false);
+      submitting.current = false;
+      setBusy(false);
     }
   }
   return (

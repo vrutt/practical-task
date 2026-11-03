@@ -15,6 +15,7 @@ export default function UsersPage() {
   const user = useAuth((s) => s.user);
   const [users, setUsers] = useState<IUser[] | null>(null);
   const [error, setError] = useState("");
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let active = true;
     async function load() {
@@ -29,15 +30,26 @@ export default function UsersPage() {
     return () => {
       active = false;
     };
-  }, [user]);
+  }, [user, attempt]);
   return (
     <>
       <p className="eyebrow">ADMINISTRATION</p>
       <h1>Users</h1>
       {error && (
-        <p role="alert" className="error">
-          {error}
-        </p>
+        <div>
+          <p role="alert" className="error">
+            {error}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setError("");
+              setAttempt((value) => value + 1);
+            }}
+          >
+            Try again
+          </button>
+        </div>
       )}
       {!error && !users && <p role="status">Loading users…</p>}
       {users && (
