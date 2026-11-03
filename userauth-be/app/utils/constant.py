@@ -39,6 +39,7 @@ class ApiPaths:
     """Constants for api paths."""
 
     API_PREFIX = "/api"
+    API_VERSION = "/v1"
     AUTH_PREFIX = "/auth"
     REGISTER_PATH = "/register"
     LOGIN_PATH = "/login"

@@ -6,7 +6,7 @@ import type {
   IValidationError,
 } from "@/types";
 
-const API_PREFIX = "/api";
+const API_PREFIX = "/api/v1";
 const FALLBACK_MESSAGE = "Please check your details and try again.";
 
 export class ApiError extends Error {

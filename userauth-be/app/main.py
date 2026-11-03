@@ -58,7 +58,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Authentication API", debug=settings.DEBUG, lifespan=lifespan, docs_url=None, servers=[{"url": "."}]
+    title="Authentication API", debug=settings.DEBUG, lifespan=lifespan, docs_url=None, servers=[{"url": "/"}]
 )
 app.state.limiter = limiter
 app.add_middleware(
@@ -71,7 +71,7 @@ app.add_middleware(
 register_exception_handlers(app)
 app.include_router(
     user_router,
-    prefix=ApiPaths.AUTH_PREFIX,
+    prefix=f"{ApiPaths.API_PREFIX}{ApiPaths.API_VERSION}{ApiPaths.AUTH_PREFIX}",
     tags=["Authentication"],
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": ErrorResponse, "description": "Authentication failed"},

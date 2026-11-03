@@ -32,7 +32,7 @@ Open `http://localhost:3000`. Configure that origin in the backend's `CORS_ALLOW
 - `store/` — Zustand client state.
 - `utils/constants.ts` — frontend validation rules and messages.
 
-API calls use the same-origin `/api` proxy. The backend sets HTTP-only cookies; the store contains only the current user's profile. The backend enforces access and roles.
+API calls use the same-origin `/api/v1` proxy, which forwards the same path to the backend (for example, `/api/v1/auth/login`). The backend sets HTTP-only cookies; the store contains only the current user's profile. The backend enforces access and roles. Swagger is available at `/api/docs`.
 
 The protected layout owns session initialization: it shows a loading state, requests the current user, and redirects on a confirmed unauthorized response. It clears the stored user if initialization fails, and network failures show a retry option. The stored user is the last successfully verified identity, not proof that a session remains valid; protected APIs enforce access independently. If a logout response is uncertain, the app does not refresh or claim that logout succeeded. It asks the user to retry, keeping the last verified identity until logout succeeds or session initialization fails.
 

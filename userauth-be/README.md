@@ -27,6 +27,8 @@ uvicorn app.main:app --reload
 
 Open `http://127.0.0.1:8000/docs`. The database user must have access to `userauth`. Never commit `.env`.
 
+API routes use the `/api/v1` prefix, for example `POST /api/v1/auth/login`. Swagger is also available through the frontend at `http://localhost:3000/api/docs`.
+
 ## Run tests
 
 From `userauth-be`, with the virtual environment active:

@@ -54,16 +54,18 @@ async def test_concurrent_refresh_allows_only_one_use():
         headers = {"Origin": "http://localhost:3000"}
         async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
             payload = {"name": "Test", "email": "test@example.com", "password": "Secure-Password1!"}
-            assert (await client.post("/auth/register", json=payload)).status_code == 201
+            assert (await client.post("/api/v1/auth/register", json=payload)).status_code == 201
             assert (
-                await client.post("/auth/login", json={"email": payload["email"], "password": payload["password"]})
+                await client.post(
+                    "/api/v1/auth/login", json={"email": payload["email"], "password": payload["password"]}
+                )
             ).status_code == 200
             old_token = client.cookies["refresh_token"]
 
         async def rotate():
             async with AsyncClient(transport=transport, base_url="http://test", headers=headers) as client:
                 client.cookies.set("refresh_token", old_token, domain="test.local", path="/")
-                return (await client.post("/auth/refresh")).status_code
+                return (await client.post("/api/v1/auth/refresh")).status_code
 
         assert sorted(await asyncio.gather(rotate(), rotate())) == [200, 401]
     finally:
